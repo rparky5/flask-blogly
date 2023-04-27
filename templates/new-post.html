@@ -5,12 +5,12 @@
   <form action="/users/{{user.id}}/posts/new" method="POST">
     <h1>Add Post for {{user.first_name}} {{user.last_name}}</h1>
     <label>Title
-      <input type="text" name="title" maxlength="100" required>
+      <input type="text" name="title" maxlength="100">
     </label>
     <label>Content
-      <textarea name="content" cols="100" rows="10" required></textarea>
+      <textarea name="content" cols="100" rows="10"></textarea>
     </label>
-    <button formaction="/users/{{user.id}}" formmethod="GET">Cancel</button>
+    <button type="submit" formaction="/users/{{user.id}}" formmethod="GET">Cancel</button>
     <button>Add</button>
   </form>
 

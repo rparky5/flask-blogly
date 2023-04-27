@@ -14,7 +14,7 @@
         <h2>Posts</h2>
         <ul>
           {% for post in user.posts %}
-          <li><a href="/posts/{{post.id}}">post</a></li>
+          <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
           {% endfor %}
         </ul>
         <button>Add Post</button>

@@ -3,7 +3,7 @@
 import os
 
 from flask import Flask, request, redirect, render_template
-from models import connect_db, User, db, Post
+from models import connect_db, User, db, Post, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -75,7 +75,7 @@ def save_user_edits(user_id):
 
     user.first_name = request.form['first_name']
     user.last_name = request.form['last_name']
-    user.image_url = request.form['image_url'] or None
+    user.image_url = request.form.get('image_url', DEFAULT_IMAGE_URL)
 
     db.session.add(user)
     db.session.commit()
@@ -121,3 +121,39 @@ def view_post(post_id):
     post = Post.query.get_or_404(post_id)
 
     return render_template("post.html", post=post)
+
+@app.get("/posts/<int:post_id>/edit")
+def edit_post(post_id):
+    """Display the form to edit a users post"""
+
+    post = Post.query.get_or_404(post_id)
+
+    return render_template("edit-post.html", post=post)
+
+@app.post("/posts/<int:post_id>/edit")
+def save_post_edits(post_id):
+    """Save post edits to database and redirect to post view"""
+
+    post = Post.query.get_or_404(post_id)
+
+    post.title = request.form['title']
+    post.content = request.form['content']
+
+    db.session.add(post)
+    db.session.commit()
+
+    return  redirect(f"/posts/{post_id}")
+
+@app.post("/posts/<int:post_id>/delete")
+def delete_post(post_id):
+    """Delete post and redirect to user profile page"""
+
+    post = Post.query.get_or_404(post_id)
+    user_id = post.user.id
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return redirect(f"/users/{user_id}")
+
+

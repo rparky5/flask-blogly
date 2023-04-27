@@ -5,16 +5,16 @@
   <form method="POST">
     <h1>Edit a User</h1>
     <label>First Name
-      <input type="text" name="first_name" value={{user.first_name}} required>
+      <input type="text" name="first_name" value={{user.first_name}}>
     </label>
     <label>Last Name
-      <input type="text" name="last_name" value={{user.last_name}} required>
+      <input type="text" name="last_name" value={{user.last_name}}>
     </label>
     <label>Image URL
       <input type="text" name="img_url" value={{user.image_url}}>
     </label>
     <button formaction="/users/{{user.id}}" formmethod="GET">Cancel</button>
-    <button type="submit">Save</button>
+    <button>Save</button>
   </form>
 
   <!-- edit user test -->
