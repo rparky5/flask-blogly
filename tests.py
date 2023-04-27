@@ -129,9 +129,7 @@ class PostViewTestCase(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
-        # As you add more models later in the exercise, you'll want to delete
-        # all of their records before each test just as we're doing with the
-        # User model below.
+        # Delete all post records
         Post.query.delete()
 
         self.client = app.test_client()
