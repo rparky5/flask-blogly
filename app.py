@@ -41,7 +41,7 @@ def create_new_user():
 
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    image_url = request.form['img_url'] or None
+    image_url = request.form['image_url'] or None
 
     new_user = User(first_name = first_name, last_name = last_name, image_url = image_url)
 
@@ -77,7 +77,7 @@ def save_user_edits(id):
 
     user.first_name = request.form['first_name']
     user.last_name = request.form['last_name']
-    user.image_url = request.form['img_url']
+    user.image_url = request.form['image_url'] or None
 
     db.session.add(user)
     db.session.commit()
