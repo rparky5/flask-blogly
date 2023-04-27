@@ -145,16 +145,17 @@ class PostViewTestCase(TestCase):
         db.session.add(test_user)
         db.session.commit()
 
+        # Save user_id
+        self.user_id = test_user.id
+
         test_post = Post(
             title="test1_title",
             content="test1_content",
+            user_id=self.user_id,
         )
 
         db.session.add(test_post)
         db.session.commit()
-
-        # Save user_id
-        self.user_id = test_user.id
 
         # Save post_id
         self.post_id = test_post.id
