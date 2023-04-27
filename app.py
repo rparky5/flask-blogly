@@ -13,8 +13,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 connect_db(app)
 
-# TODO: order by with sqlalchemy
-
 @app.get('/')
 def homepage():
     """Display Home Page"""
