@@ -150,8 +150,8 @@ class PostViewTestCase(TestCase):
         self.user_id = test_user.id
 
         test_post = Post(
-            title="test1_title",
-            content="test1_content",
+            title="post1_title",
+            content="post1_content",
             user_id=self.user_id,
         )
 
@@ -172,4 +172,4 @@ class PostViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
 
             html = resp.get_data(as_text=True)
-            self.assertIn("test1_title", html)
+            self.assertIn("post1_title", html)
