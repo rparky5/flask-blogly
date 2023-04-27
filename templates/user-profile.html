@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div style="display: inline-block;">
+    <img src="{{user.image_url}}">
+    <div>
+      <form action="/users/{{user.id}}/delete" method="POST">
+        <h1>{{user.first_name}} {{user.last_name}}</h1>
+        <button formaction="/users/{{user.id}}/edit" formmethod="GET">Edit</button>
+        <button type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
