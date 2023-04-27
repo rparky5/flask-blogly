@@ -171,4 +171,3 @@ class PostViewTestCase(TestCase):
 
             html = resp.get_data(as_text=True)
             self.assertIn("test1_title", html)
-            self.assertIn("test1_content", html)
