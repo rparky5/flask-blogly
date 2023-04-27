@@ -129,6 +129,9 @@ class PostViewTestCase(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
+        # Delete all user records
+        User.query.delete()
+
         # Delete all post records
         Post.query.delete()
 
