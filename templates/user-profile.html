@@ -10,7 +10,16 @@
         <button formaction="/users/{{user.id}}/edit" formmethod="GET">Edit</button>
         <button type="submit">Delete</button>
       </form>
+      <form action="/users/{{user.id}}/posts/new">
+        <h2>Posts</h2>
+        <ul>
+          {% for post in user.posts %}
+          <li><a href="/posts/{{post.id}}">post</a></li>
+          {% endfor %}
+        </ul>
+        <button>Add Post</button>
+      </form>
     </div>
   </div>
-
+  <!-- user profile test -->
 {% endblock %}

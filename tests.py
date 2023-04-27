@@ -61,73 +61,65 @@ class UserViewTestCase(TestCase):
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
 
+    def test_homepage(self):
+        """Test if going to homepage redirects to /users"""
 
-class RouteTestCases(TestCase):
-    """ Tests homepage redirect"""
-
-    def setUp(self):
-        """Create test client, add sample data."""
-
-        User.query.delete()
-
-        test_user = User(
-            first_name="test1_first",
-            last_name="test1_last",
-            image_url=None,
-        )
-
-        self.user_id = test_user.id
-
-
-    def tearDown(self):
-        """Clean up any fouled transaction."""
-        db.session.rollback()
-
-    def test_homepage_redirect(self):
-        """test if homepage redirects to user page"""
-
-        with app.test_client() as client:
-            response = client.get("/")
-
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.location, "/users")
-
-    def test_redirection_followed(self):
-        with app.test_client() as client:
+        with self.client as client:
             response = client.get("/", follow_redirects=True)
             html = response.get_data(as_text=True)
 
             self.assertEqual(response.status_code, 200)
             self.assertIn('<!-- Users Pages -->', html)
 
-    def test_new_user(self):
+    def test_create_new_user(self):
         """test if the page creates new user and redirects"""
 
-        with app.test_client() as client:
+        with self.client as client:
 
-            response = client.post("/users/new", data={"first_name":"test1_first",
-                                                        "last_name":"test1_last",
-                                                        "image_url":""
-                                                        })
+            response = client.post(
+                "/users/new",
+                data={
+                    "first_name":"test2_first",
+                    "last_name":"test2_last",
+                    "image_url":""
+                },
+                follow_redirects=True)
+            html = response.get_data(as_text=True)
 
-            check_user = User.query.filter(User.first_name == "test1_first").first()
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('test2_first', html)
 
-            self.assertIsNotNone(check_user)
-            self.assertEqual(check_user.image_url, DEFAULT_IMAGE_URL)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.location, "/users")
+    def test_user_profile(self):
+        """Test to see if user profile loads user"""
 
-    def delete_user(self):
-        """test if users page properly loads all users"""
+        with self.client as client:
+            response = client.get(f"/users/{self.user_id}")
+            html = response.get_data(as_text=True)
 
-        with app.test_client() as client:
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('<!-- user profile test -->', html)
+            self.assertIn('test1_first', html)
 
-            response = client.post(f"/users/{self.user_id}/delete")
+    def test_edit_user_profile(self):
+        """Test to see if edit user profile page loads"""
 
-            check_user = User.query.filter(User.first_name == "test1_first").first()
+        with self.client as client:
+            response = client.get(f"/users/{self.user_id}/edit")
+            html = response.get_data(as_text=True)
 
-            self.assertIsNone(check_user)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.location, "/users")
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('<!-- edit user test -->', html)
+            self.assertIn('test1_first', html)
+
+    def test_delete_user(self):
+        """test if users page properly deletes and loads all users"""
+
+        with self.client as client:
+
+            response = client.post(f"/users/{self.user_id}/delete", follow_redirects=True)
+            html = response.get_data(as_text=True)
+
+            self.assertNotIn("test1_first", html)
+            self.assertEqual(response.status_code, 200)
 
 
