@@ -48,16 +48,18 @@ class UserViewTestCase(TestCase):
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+        
 
     def tearDown(self):
         """Clean up any fouled transaction."""
         db.session.rollback()
 
     def test_list_users(self):
-        with self.client as c:
-            resp = c.get("/users")
-            self.assertEqual(resp.status_code, 200)
-            html = resp.get_data(as_text=True)
+        with self.client as client:
+            response = client.get("/users")
+            html = response.get_data(as_text=True)
+
+            self.assertEqual(response.status_code, 200)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
 
@@ -130,24 +132,24 @@ class PostViewTestCase(TestCase):
         """Create test client, add sample data."""
 
         # Delete all user records
-        User.query.delete()
+        # User.query.delete()
 
         # Delete all post records
         Post.query.delete()
 
         self.client = app.test_client()
 
-        test_user = User(
-            first_name="test1_first",
-            last_name="test1_last",
+        post_test_user = User(
+            first_name="test3_first",
+            last_name="test3_last",
             image_url=None,
         )
 
-        db.session.add(test_user)
+        db.session.add(post_test_user)
         db.session.commit()
 
         # Save user_id
-        self.user_id = test_user.id
+        self.user_id = post_test_user.id
 
         test_post = Post(
             title="post1_title",
@@ -167,9 +169,60 @@ class PostViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_posts(self):
-        with self.client as client:
-            resp = client.get(f"/users/{self.user_id}")
-            self.assertEqual(resp.status_code, 200)
+        """Test that post shows up on user page"""
 
-            html = resp.get_data(as_text=True)
+        with self.client as client:
+            response = client.get(f"/users/{self.user_id}")
+            html = response.get_data(as_text=True)
+
+            self.assertEqual(response.status_code, 200)
             self.assertIn("post1_title", html)
+
+    def test_new_post(self):
+        """Test that new form page displays"""
+
+        with self.client as client:
+            response = client.get(f"/users/{self.user_id}/posts/new")
+            html = response.get_data(as_text=True)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("<!-- form test comment -->", html)
+
+    def test_create_new_post(self):
+        """Test new post shows up on user page"""
+
+        with self.client as client:
+
+            response = client.post(
+                f"/users/{self.user_id}/posts/new",
+                data={
+                    "title": "post2_title",
+                    "content": "post2_content",
+                    "user_id": self.user_id
+                },
+                follow_redirects=True)
+            html = response.get_data(as_text=True)
+
+            self.assertIn("post2_title", html)
+            self.assertEqual(response.status_code, 200)
+
+    def test_view_post(self):
+        """Test viewing a specific post in the view post page"""
+
+        with self.client as client:
+            response = client.get(f"/posts/{self.post_id}")
+            html = response.get_data(as_text=True)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("<!-- post test comment -->", html)
+            self.assertIn("post1_content", html)
+
+    def test_delete_post(self):
+        """Test that deleted post doesn't show up on page"""
+
+        with self.client as client:
+            response = client.post(f"/posts/{self.post_id}/delete", follow_redirects=True)
+            html = response.get_data(as_text=True)
+
+            self.assertNotIn("post1_title", html)
+            self.assertEqual(response.status_code, 200)
